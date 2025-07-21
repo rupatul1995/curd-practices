@@ -1,7 +1,12 @@
 import { useState } from "react";
 
 function Login(){
-    const[UserData,setUserData]=useState()
+    const[UserData,setUserData]=useState({email:"" ,password:""});
+
+
+    function handlechange(event){
+        setUserData({...UserData,[event.target.name]:event.target.value});
+    }
     return (
         <div>
             <h1>Login</h1>
