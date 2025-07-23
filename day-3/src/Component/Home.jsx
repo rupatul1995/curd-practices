@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import Api from "../axiosConfig";
+import Api from "axiosConfig";
 import { useNavigate } from "react-router-dom";
 
 function Home() {
@@ -10,14 +9,13 @@ function Home() {
   const router  = useNavigate()
 
   async function GetProducts() {
-    // alert("Hi from get Products.");
     setLoading(true);
     try {
-      const response = await Api.get("/product/get-all-product"); // change
+      const response = await Api.get("/product/get-all-product"); 
       if (response.data.success) {
         //   console.log(response.data);
         setLoading(false);
-        setAllProducts(response.data.products); // change
+        setAllProducts(response.data.products); 
       }
     } catch (error) {
       console.log(error);
@@ -25,7 +23,6 @@ function Home() {
   }
 
   useEffect(() => {
-    // api call to backend
     GetProducts();
   }, []);
 
