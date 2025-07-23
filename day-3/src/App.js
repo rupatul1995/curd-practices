@@ -2,8 +2,9 @@ import logo from './logo.svg';
 
 import './App.css';
 import { Route, Routes } from 'react-router-dom';
-import Counter from './Component/Counter';
-import Login from './Component/Login';
+import AddProduct from './Component/AddProduct';
+import EditProduct from './Component/EditProduct';
+import Home from './Component/Home';
 
 
 
@@ -12,8 +13,9 @@ function App() {
     <div className="App">
       
     <Routes>
-      <Route path="/login" element={<Login/>}/>
-      <Route path='/counter' element={<Counter/>} />
+        <Route path="/" element={<Home/>} />
+        <Route path="/add" element={<AddProduct/>} />
+        <Route path="/edit/:id" element={<EditProduct/>} />
 
     </Routes>
     </div>
