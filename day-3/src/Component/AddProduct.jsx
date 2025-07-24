@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import Api from "../axiosConfig";
+import React, {  useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import Api from "../axiosConfig";
 
 const AddProduct = () => {
-  const navigate = useNavigate();
+  const router = useNavigate();
   const [productData, setProductData] = useState({
     name: "",
     price: "",
@@ -15,49 +15,131 @@ const AddProduct = () => {
   const [errors, setErrors] = useState([]);
   const [disable, setDisable] = useState(true);
 
-  const handleChange = (e) => {
-    setProductData({ ...productData, [e.target.name]: e.target.value });
-  };
+  // console.log(productData, "productData");
+  function handleChange(event) {
+    // console.log(event.target.value, event.target.name);
+    setProductData({ ...productData, [event.target.name]: event.target.value });
+  }
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
     try {
-      const res = await Api.post("/product/create", { productData });
-      if (res.data.success) {
-        toast.success("Product created!");
-        navigate("/allproducts");
+      if (
+        productData.name &&
+        productData.price &&
+        productData.category &&
+        productData.quantity &&
+        productData.image
+      ) {
+        const response = await Api.post("/products/create-new-product", {
+          productData,
+           userId: "your_user_id_here",
+        });
+        if (response.data.success) {
+          setProductData({
+            name: "",
+            price: "",
+            category: "",
+            quantity: "",
+            image: "",
+          });
+          router("/allproducts");
+          toast.success(response.data.message);
+        }
       } else {
-        toast.error(res.data.error || "Failed to create product.");
+        throw Error("All fields are mandatory.");
       }
-    } catch (err) {
-      toast.error("Something went wrong.");
+    } catch (error) {
+      console.log(error, "error");
+      toast.error(error.response.data.error);
     }
-  };
+  }
 
   useEffect(() => {
-    const errs = [];
-    if (!productData.name) errs.push("Name is required.");
-    if (!productData.price) errs.push("Price is required.");
-    if (!productData.category) errs.push("Category is required.");
-    if (!productData.quantity) errs.push("Quantity is required.");
-    if (!productData.image) errs.push("Image URL is required.");
-    setErrors(errs);
-    setDisable(errs.length > 0);
+    const errorsArray = [];
+    if (!productData.name) {
+      errorsArray.push("Name is required.");
+    }
+    if (!productData.price) {
+      errorsArray.push("Email is required.");
+    }
+    if (!productData.category) {
+      errorsArray.push("Password is required.");
+    }
+    if (!productData.quantity) {
+      errorsArray.push("Quantity is required.");
+    }
+    if (!productData.image) {
+      errorsArray.push("Image is required.");
+    }
+    setErrors(errorsArray);
+    if (errorsArray.length == 0) {
+      setDisable(false);
+    } else {
+      setDisable(true);
+    }
   }, [productData]);
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Add Product</h2>
-      <input type="text" name="name" placeholder="Name" value={productData.name} onChange={handleChange} /><br />
-      <input type="number" name="price" placeholder="Price" value={productData.price} onChange={handleChange} /><br />
-      <input type="text" name="category" placeholder="Category" value={productData.category} onChange={handleChange} /><br />
-      <input type="number" name="quantity" placeholder="Quantity" value={productData.quantity} onChange={handleChange} /><br />
-      <input type="url" name="image" placeholder="Image URL" value={productData.image} onChange={handleChange} /><br />
-
-      {errors.length > 0 && <div>{errors.map((err, i) => <p key={i}>{err}</p>)}</div>}
-
-      <button disabled={disable} type="submit">Add Product</button>
-    </form>
+    <div>
+      <form onSubmit={handleSubmit}>
+        <h1>Add New Product</h1>
+        <label>Name : </label>
+        <br />
+        <input
+          type="text"
+          onChange={handleChange}
+          name="name"
+          value={productData.name}
+        />
+        <br />
+        <label>Price : </label>
+        <br />
+        <input
+          type="number"
+          onChange={handleChange}
+          name="price"
+          value={productData.price}
+        />
+        <br />
+        <label>Category : </label>
+        <br />
+        <input
+          type="text"
+          onChange={handleChange}
+          name="category"
+          value={productData.category}
+        />
+        <br />
+        <label>Quantity : </label>
+        <br />
+        <input
+          type="number"
+          onChange={handleChange}
+          name="quantity"
+          value={productData.quantity}
+        />
+        <br />
+        <label>Image url : </label>
+        <br />
+        <input
+          type="url"
+          onChange={handleChange}
+          name="image"
+          value={productData.image}
+        />
+        <br />
+        {errors.length > 0 && (
+          <div>
+            {errors.map((error, i) => (
+              <p key={i}>{error}*</p>
+            ))}
+          </div>
+        )}
+        <input disabled={disable} type="submit" value="Add" />
+        <br />
+      </form>
+    </div>
   );
 };
 
