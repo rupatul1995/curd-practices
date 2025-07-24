@@ -30,7 +30,7 @@ const AddProduct = () => {
         productData.quantity &&
         productData.image
       ) {
-        const response = await Api.post("/products/create-new-product", {
+        const response = await Api.post("/product/create-new-product", {
           productData,
           userId: "your_user_id_here", 
         });
