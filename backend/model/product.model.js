@@ -6,7 +6,6 @@ const productSchema = new Schema({
   category: String,
   quantity: Number,
   image: String,
-  creatorId: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" },
   tags: [String],
 });
 

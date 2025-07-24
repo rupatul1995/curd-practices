@@ -32,7 +32,7 @@ const AddProduct = () => {
       ) {
         const response = await Api.post("/product/create-new-product", {
           productData,
-          userId: "your_user_id_here", 
+          userId: "64e51a56f4cbd13b7c5f91a2"
         });
 
         if (response.data.success) {
