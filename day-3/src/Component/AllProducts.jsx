@@ -33,7 +33,6 @@ function AllProducts() {
 
   return (
     <div className="all-products-container">
-      {/* ✅ Add Product Button */}
       <div className="top-bar">
         <button className="add-product-btn" onClick={() => router("/")}>
           + Add Product
