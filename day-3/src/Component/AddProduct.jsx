@@ -1,7 +1,8 @@
-import React, {  useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Api from "../axiosConfig";
+import "./addproduct.css";
 
 const AddProduct = () => {
   const router = useNavigate();
@@ -15,13 +16,11 @@ const AddProduct = () => {
   const [errors, setErrors] = useState([]);
   const [disable, setDisable] = useState(true);
 
-  // console.log(productData, "productData");
-  function handleChange(event) {
-    // console.log(event.target.value, event.target.name);
+  const handleChange = (event) => {
     setProductData({ ...productData, [event.target.name]: event.target.value });
-  }
+  };
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (
@@ -33,8 +32,9 @@ const AddProduct = () => {
       ) {
         const response = await Api.post("/products/create-new-product", {
           productData,
-           userId: "your_user_id_here",
+          userId: "your_user_id_here", 
         });
+
         if (response.data.success) {
           setProductData({
             name: "",
@@ -47,97 +47,84 @@ const AddProduct = () => {
           toast.success(response.data.message);
         }
       } else {
-        throw Error("All fields are mandatory.");
+        throw new Error("All fields are mandatory.");
       }
     } catch (error) {
-      console.log(error, "error");
-      toast.error(error.response.data.error);
+      console.log(error);
+      toast.error(
+        error.response?.data?.error || error.message || "Something went wrong"
+      );
     }
-  }
+  };
 
   useEffect(() => {
     const errorsArray = [];
-    if (!productData.name) {
-      errorsArray.push("Name is required.");
-    }
-    if (!productData.price) {
-      errorsArray.push("price is required.");
-    }
-    if (!productData.category) {
-      errorsArray.push("category is required.");
-    }
-    if (!productData.quantity) {
-      errorsArray.push("Quantity is required.");
-    }
-    if (!productData.image) {
-      errorsArray.push("Image is required.");
-    }
+    if (!productData.name) errorsArray.push("Name is required.");
+    if (!productData.price) errorsArray.push("Price is required.");
+    if (!productData.category) errorsArray.push("Category is required.");
+    if (!productData.quantity) errorsArray.push("Quantity is required.");
+    if (!productData.image) errorsArray.push("Image is required.");
+
     setErrors(errorsArray);
-    if (errorsArray.length == 0) {
-      setDisable(false);
-    } else {
-      setDisable(true);
-    }
+    setDisable(errorsArray.length > 0);
   }, [productData]);
 
   return (
-    <div>
+    <div className="add-product-container">
       <form onSubmit={handleSubmit}>
         <h1>Add New Product</h1>
-        <label>Name : </label>
-        <br />
+
+        <label>Name:</label>
         <input
           type="text"
           onChange={handleChange}
           name="name"
           value={productData.name}
         />
-        <br />
-        <label>Price : </label>
-        <br />
+
+        <label>Price:</label>
         <input
           type="number"
           onChange={handleChange}
           name="price"
           value={productData.price}
         />
-        <br />
-        <label>Category : </label>
-        <br />
+
+        <label>Category:</label>
         <input
           type="text"
           onChange={handleChange}
           name="category"
           value={productData.category}
         />
-        <br />
-        <label>Quantity : </label>
-        <br />
+
+        <label>Quantity:</label>
         <input
           type="number"
           onChange={handleChange}
           name="quantity"
           value={productData.quantity}
         />
-        <br />
-        <label>Image url : </label>
-        <br />
+
+        <label>Image URL:</label>
         <input
           type="url"
           onChange={handleChange}
           name="image"
           value={productData.image}
         />
-        <br />
+
         {errors.length > 0 && (
           <div>
             {errors.map((error, i) => (
-              <p key={i}>{error}*</p>
+              <p className="error-message" key={i}>
+                {error}
+              </p>
             ))}
           </div>
         )}
-        <input disabled={disable} type="submit" value="Add" />
-        <br />
+
+        <input disabled={disable} type="submit" value="Add Product" />
       </form>
     </div>
   );
