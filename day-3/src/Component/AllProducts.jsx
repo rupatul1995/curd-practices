@@ -8,9 +8,14 @@ const AllProducts = () => {
   const navigate = useNavigate();
 
   const fetchProducts = async () => {
-    const res = await Api.get("/product");
+  try {
+    const res = await Api.get("/product/get-all-product"); // ✅ Correct route
     setProducts(res.data.products);
-  };
+  } catch (err) {
+    console.error("Error fetching products:", err);
+  }
+};
+
 
   useEffect(() => {
     fetchProducts();

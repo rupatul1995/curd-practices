@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import Api from "../axiosConfig";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import Api from "axiosConfig";
 
 const AddProduct = () => {
-  const router = useNavigate();
+  const navigate = useNavigate();
   const [productData, setProductData] = useState({
     name: "",
     price: "",
@@ -14,156 +14,50 @@ const AddProduct = () => {
   });
   const [errors, setErrors] = useState([]);
   const [disable, setDisable] = useState(true);
-  // console.log(errors, "errors");
 
-  // console.log(productData, "productData");
-  function handleChange(event) {
-    // console.log(event.target.value, event.target.name);
-    setProductData({ ...productData, [event.target.name]: event.target.value });
-    // Obj["awdiz"]
-  }
+  const handleChange = (e) => {
+    setProductData({ ...productData, [e.target.name]: e.target.value });
+  };
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // api call to backend
     try {
-      if (
-        productData.name &&
-        productData.price &&
-        productData.category &&
-        productData.quantity &&
-        productData.image
-      ) {
-        const response = await Api.post("/product/create-new-product", {
-          productData,
-         
-        });
-        // const response = {
-        //   data: { success: true, message: "Regsiter successfull." },
-        // };
-        if (response.data.success) {
-          setProductData({
-            name: "",
-            price: "",
-            category: "",
-            quantity: "",
-            image: "",
-          });
-          router("/allproducts");
-          toast.success(response.data.message);
-        }
+      const res = await Api.post("/product/create", { productData });
+      if (res.data.success) {
+        toast.success("Product created!");
+        navigate("/allproducts");
       } else {
-        throw Error("All fields are mandatory.");
-        // toast.error("All fields are mandatory.");
+        toast.error(res.data.error || "Failed to create product.");
       }
-    } catch (error) {
-      console.log(error, "error");
-      //   console.log(error);
-      //   error =  { data : { success : false, message : "Password is invalid."}}
-      toast.error(error.response.data.error);
+    } catch (err) {
+      toast.error("Something went wrong.");
     }
-  }
+  };
 
   useEffect(() => {
-    const errorsArray = [];
-    if (!productData.name) {
-      errorsArray.push("Name is required.");
-    }
-    if (!productData.price) {
-      errorsArray.push("Email is required.");
-    }
-    if (!productData.category) {
-      errorsArray.push("Password is required.");
-    }
-    if (!productData.quantity) {
-      errorsArray.push("Quantity is required.");
-    }
-    if (!productData.image) {
-      errorsArray.push("Image is required.");
-    }
-    setErrors(errorsArray);
-    if (errorsArray.length == 0) {
-      setDisable(false);
-    } else {
-      setDisable(true);
-    }
+    const errs = [];
+    if (!productData.name) errs.push("Name is required.");
+    if (!productData.price) errs.push("Price is required.");
+    if (!productData.category) errs.push("Category is required.");
+    if (!productData.quantity) errs.push("Quantity is required.");
+    if (!productData.image) errs.push("Image URL is required.");
+    setErrors(errs);
+    setDisable(errs.length > 0);
   }, [productData]);
 
-  // useEffect(() => {
-  //   if (state?.user) {
-  //     console.log(state?.user, "state?.user in add product");
-  //     if (state?.user?.role !== "admin") {
-  //       toast.error("You are not allowred to access this page.");
-  //       router("/");
-  //     }
-  //   } else {
-  //     toast.error("Login to access page.");
-  //     router("/login");
-  //   }
-  // }, [state]);
-
   return (
-    // <AuthRedirection>
-    <div>
-      <form onSubmit={handleSubmit}>
-        <h1>Add New Product</h1>
-        <label>Name : </label>
-        <br />
-        <input
-          type="text"
-          onChange={handleChange}
-          name="name"
-          value={productData.name}
-        />
-        <br />
-        <label>Price : </label>
-        <br />
-        <input
-          type="number"
-          onChange={handleChange}
-          name="price"
-          value={productData.price}
-        />
-        <br />
-        <label>Category : </label>
-        <br />
-        <input
-          type="text"
-          onChange={handleChange}
-          name="category"
-          value={productData.category}
-        />
-        <br />
-        <label>Quantity : </label>
-        <br />
-        <input
-          type="number"
-          onChange={handleChange}
-          name="quantity"
-          value={productData.quantity}
-        />
-        <br />
-        <label>Image url : </label>
-        <br />
-        <input
-          type="url"
-          onChange={handleChange}
-          name="image"
-          value={productData.image}
-        />
-        <br />
-        {errors.length > 0 && (
-          <div>
-            {errors.map((error, i) => (
-              <p key={i}>{error}*</p>
-            ))}
-          </div>
-        )}
-        <input disabled={disable} type="submit" value="Add" />
-        <br />
-      </form>
-    </div>
-    // </AuthRedirection>
+    <form onSubmit={handleSubmit}>
+      <h2>Add Product</h2>
+      <input type="text" name="name" placeholder="Name" value={productData.name} onChange={handleChange} /><br />
+      <input type="number" name="price" placeholder="Price" value={productData.price} onChange={handleChange} /><br />
+      <input type="text" name="category" placeholder="Category" value={productData.category} onChange={handleChange} /><br />
+      <input type="number" name="quantity" placeholder="Quantity" value={productData.quantity} onChange={handleChange} /><br />
+      <input type="url" name="image" placeholder="Image URL" value={productData.image} onChange={handleChange} /><br />
+
+      {errors.length > 0 && <div>{errors.map((err, i) => <p key={i}>{err}</p>)}</div>}
+
+      <button disabled={disable} type="submit">Add Product</button>
+    </form>
   );
 };
 

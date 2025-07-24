@@ -1,46 +1,72 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
+import Api from "../axiosConfig";
 
-const EditProduct = ({ products, setProducts }) => {
+const EditProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const [form, setForm] = useState({
+  const [productData, setProductData] = useState({
     name: "",
     price: "",
     category: "",
     quantity: "",
     image: "",
   });
+  const [disable, setDisable] = useState(true);
 
   useEffect(() => {
-    const product = products.find((p) => p.id === id);
-    if (product) setForm(product);
-  }, [id, products]);
+    const fetchProduct = async () => {
+      const res = await Api.get(`/product/${id}`);
+      if (res.data.success) {
+        setProductData(res.data.product);
+      }
+    };
+    fetchProduct();
+  }, [id]);
+
+  useEffect(() => {
+    const { name, price, category, quantity, image } = productData;
+    setDisable(!(name && price && category && quantity && image));
+  }, [productData]);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setProductData({ ...productData, [e.target.name]: e.target.value });
   };
 
-  const handleUpdate = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const updatedProducts = products.map((p) =>
-      p.id === id ? form : p
-    );
-    setProducts(updatedProducts);
-    navigate("/");
+    try {
+      const res = await Api.put(`/product/${id}`, { productData });
+      if (res.data.success) {
+        toast.success(res.data.message);
+        navigate("/allproducts");
+      }
+    } catch (err) {
+      toast.error("Something went wrong.");
+    }
   };
 
   return (
     <div>
-      <h2>Edit Product</h2>
-      <form onSubmit={handleUpdate}>
-        <input name="name" value={form.name} onChange={handleChange} required /><br />
-        <input name="price" type="number" value={form.price} onChange={handleChange} required /><br />
-        <input name="category" value={form.category} onChange={handleChange} required /><br />
-        <input name="quantity" type="number" value={form.quantity} onChange={handleChange} required /><br />
-        <input name="image" value={form.image} onChange={handleChange} required /><br />
-        <button type="submit">Update</button>
+      <form onSubmit={handleSubmit}>
+        <h1>Edit Product</h1>
+        <label>Name:</label>
+        <input type="text" name="name" value={productData.name} onChange={handleChange} />
+        <br />
+        <label>Price:</label>
+        <input type="number" name="price" value={productData.price} onChange={handleChange} />
+        <br />
+        <label>Category:</label>
+        <input type="text" name="category" value={productData.category} onChange={handleChange} />
+        <br />
+        <label>Quantity:</label>
+        <input type="number" name="quantity" value={productData.quantity} onChange={handleChange} />
+        <br />
+        <label>Image URL:</label>
+        <input type="url" name="image" value={productData.image} onChange={handleChange} />
+        <br />
+        <input disabled={disable} type="submit" value="Update Product" />
       </form>
     </div>
   );
