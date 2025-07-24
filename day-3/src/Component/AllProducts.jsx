@@ -1,64 +1,51 @@
-import { useEffect, useState } from "react";
-import Api from "../axiosConfig";
+
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Api from "../axiosConfig";
+import toast from "react-hot-toast";
+import "./allproducts.css";
 
 function AllProducts() {
-  const [allProducts, setAllProducts] = useState([]);
-  console.log(allProducts, "allProducts");
-  const [loading, setLoading] = useState(false);
-  const router  = useNavigate()
-
-  async function GetProducts() {
-    setLoading(true);
-    try {
-      const response = await Api.get("/product/get-all-product"); 
-      if (response.data.success) {
-        //   console.log(response.data);
-        setLoading(false);
-        setAllProducts(response.data.products); 
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useNavigate();
 
   useEffect(() => {
-    GetProducts();
+    Api.get("/product/get-all-product")
+      .then(res => {
+        if (res.data.success) setProducts(res.data.products);
+      })
+      .catch(err => toast.error("Error loading products"))
+      .finally(() => setLoading(false));
   }, []);
 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this product?")) return;
+    try {
+      const res = await Api.delete(`/product/${id}`);
+      if (res.data.success) {
+        setProducts(products.filter(p => p._id !== id));
+        toast.success(res.data.message);
+      }
+    } catch {
+      toast.error("Delete failed");
+    }
+  };
+
   return (
-    <div>
+    <div className="all-products-container">
       <h1>All Products</h1>
-      {loading ? (
-        <div>
-          <h1>Loading...</h1>
-          
-        </div>
-      ) : (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-around",
-          }}
-        >
-          {allProducts.map((product) => (
-            <div
-              style={{
-                width: "23%",
-                height: "350px",
-                border: "2px solid black",
-                marginBottom: "20px",
-                cursor: "pointer",
-              }}
-              onClick={() => router(`/product/${product._id}`)}
-            >
-              <img
-                style={{ width: "80%", height: "70%" }}
-                src={product.image}
-              />
-              <p>Title : {product.name}</p>
-              <p>Price : {product.price}/-</p>
+      {loading ? <p>Loading...</p> : (
+        <div className="product-grid">
+          {products.map(p => (
+            <div key={p._id} className="product-card">
+              <img src={p.image} alt={p.name} className="product-image"/>
+              <h3>{p.name}</h3>
+              <p>₹ {p.price}</p>
+              <div className="actions">
+                <button onClick={() => router(`/edit/${p._id}`)}>Edit</button>
+                <button onClick={() => handleDelete(p._id)}>Delete</button>
+              </div>
             </div>
           ))}
         </div>
