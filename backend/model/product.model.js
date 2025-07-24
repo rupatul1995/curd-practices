@@ -1,4 +1,4 @@
-import mongoose, { Schema, Types, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 
 const productSchema = new Schema({
   name: String,
@@ -6,8 +6,6 @@ const productSchema = new Schema({
   category: String,
   quantity: Number,
   image: String,
-  creatorId: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" },
-  tags: [String],
 });
 
 const Product = model("Product", productSchema);

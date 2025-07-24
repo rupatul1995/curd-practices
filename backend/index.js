@@ -1,18 +1,21 @@
 import express from "express";
 import dotenv from "dotenv";
 import AllRoutes from "./routes/index.js";
+import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import cors from "cors";
 const app = express();
 
+app.use(cookieParser());
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3001"],
   })
 );
 dotenv.config();
 app.use(express.json());
+
 
 app.get("/", function (req, res) {
   res.send("working.");

@@ -1,26 +1,7 @@
 import Product from "../model/product.model.js";
 
-export const GetAllProducts = async (req, res) => {
-  try {
-    const products = await Product.find({});
-    res.json({ success: true, products });
-  } catch (error) {
-    return res.json({ error, success: false });
-  }
-};
 
-export const GetSingleProducts = async (req, res) => {
-  try {
-    const { productId } = req.body;
-    if (!productId) {
-      return res.json({ success: false, error: "Product ID is required." });
-    }
-    const product = await Product.findById(productId);
-    res.json({ success: true, product });
-  } catch (error) {
-    return res.json({ error, success: false });
-  }
-};
+
 export const CreateNewProduct = async (req, res) => {
   try {
     const { name, price, category, quantity, image } = req.body.productData;
@@ -57,38 +38,23 @@ export const CreateNewProduct = async (req, res) => {
   }
 };
 
-export const filter = async (req, res) => {
-  try {
-    const { price, price1 } = req.body; // 0 - 1000 price
-    if (!price) {
-      return res.status(400).json({ success: false, error: "Price is required." });
-    }
-    // const filteredProducts = await Product.find({ rating: { $exists: false } });
-    // const filteredProducts = await Product.find({
-    //   $or: [{ price: { $gt: 1000 } }, { quantity: { $lte: 20 } }],
-    // });
-    // const filteredProducts = await Product.find({
-    //   price: { $not: { $gt: 1000 } },
-    // });
-    // const filteredProducts = await Product.find({
-    //   $nor : [{ price: { $gt: 1000 } }, { quantity: { $lte: 20 } }],
-    // });
-    const filteredProducts = await Product.find({
-      rating: { $type: "number" },
-    });
 
-    return res.json({ success: true, products: filteredProducts });
+
+
+export const GetAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find({});
+    res.json({ success: true, products });
   } catch (error) {
-    console.log(error, "error");
-    return res.json({ error: error, success: false });
+    return res.json({ error, success: false });
   }
 };
+
 
 
 export const search = async (req, res) => {
   try {
     const { searchedWord } = req.body;
-    // apply search on category and tags too. use or operator
     const products = await Product.find({
       name: { $regex: searchedWord, $options: "i" },
     });
