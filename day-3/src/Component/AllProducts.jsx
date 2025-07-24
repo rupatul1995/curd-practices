@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Api from "../axiosConfig";
@@ -34,7 +33,15 @@ function AllProducts() {
 
   return (
     <div className="all-products-container">
+      {/* ✅ Add Product Button */}
+      <div className="top-bar">
+        <button className="add-product-btn" onClick={() => router("/")}>
+          + Add Product
+        </button>
+      </div>
+
       <h1>All Products</h1>
+
       {loading ? <p>Loading...</p> : (
         <div className="product-grid">
           {products.map(p => (
