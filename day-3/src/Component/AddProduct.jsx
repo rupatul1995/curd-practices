@@ -61,10 +61,10 @@ const AddProduct = () => {
       errorsArray.push("Name is required.");
     }
     if (!productData.price) {
-      errorsArray.push("Email is required.");
+      errorsArray.push("price is required.");
     }
     if (!productData.category) {
-      errorsArray.push("Password is required.");
+      errorsArray.push("category is required.");
     }
     if (!productData.quantity) {
       errorsArray.push("Quantity is required.");
