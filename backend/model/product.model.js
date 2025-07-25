@@ -6,7 +6,6 @@ const productSchema = new Schema({
   category: String,
   quantity: Number,
   image: String,
-  tags: [String],
 });
 
 const Product = model("Product", productSchema);

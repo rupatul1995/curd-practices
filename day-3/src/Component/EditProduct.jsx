@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import Api from "../axiosConfig";
+import "./editproduct.css";
 
 const EditProduct = () => {
   const { id } = useParams();
@@ -40,7 +41,7 @@ const EditProduct = () => {
       const res = await Api.put(`/product/${id}`, { productData });
       if (res.data.success) {
         toast.success(res.data.message);
-        navigate("/allproducts");
+        navigate("/");
       }
     } catch (err) {
       toast.error("Something went wrong.");
@@ -48,28 +49,28 @@ const EditProduct = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <h1>Edit Product</h1>
-        <label>Name:</label>
-        <input type="text" name="name" value={productData.name} onChange={handleChange} />
-        <br />
-        <label>Price:</label>
-        <input type="number" name="price" value={productData.price} onChange={handleChange} />
-        <br />
-        <label>Category:</label>
-        <input type="text" name="category" value={productData.category} onChange={handleChange} />
-        <br />
-        <label>Quantity:</label>
-        <input type="number" name="quantity" value={productData.quantity} onChange={handleChange} />
-        <br />
-        <label>Image URL:</label>
-        <input type="url" name="image" value={productData.image} onChange={handleChange} />
-        <br />
-        <input disabled={disable} type="submit" value="Update Product" />
-      </form>
-    </div>
-  );
-};
+  <div className="edit-product-container">
+    <form onSubmit={handleSubmit}>
+      <h1>Edit Product</h1>
+      <label>Name:</label>
+      <input type="text" name="name" value={productData.name} onChange={handleChange} />
+
+      <label>Price:</label>
+      <input type="number" name="price" value={productData.price} onChange={handleChange} />
+
+      <label>Category:</label>
+      <input type="text" name="category" value={productData.category} onChange={handleChange} />
+
+      <label>Quantity:</label>
+      <input type="number" name="quantity" value={productData.quantity} onChange={handleChange} />
+
+      <label>Image URL:</label>
+      <input type="url" name="image" value={productData.image} onChange={handleChange} />
+
+      <input disabled={disable} type="submit" value="Update Product" />
+    </form>
+  </div>
+);
+}
 
 export default EditProduct;

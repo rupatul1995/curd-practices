@@ -43,7 +43,7 @@ const AddProduct = () => {
             quantity: "",
             image: "",
           });
-          router("/allproducts");
+          router("/");
           toast.success(response.data.message);
         }
       } else {
