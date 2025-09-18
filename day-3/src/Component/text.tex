@@ -1,0 +1,34 @@
+import axios from "axios";
+import { useEffect } from "react";
+import { useState } from "react";
+
+const Login = () => {
+  const [ProductData, setProductData] = useState([]);
+
+  async function GetFekeApi() {
+    try {
+      const response = await axios.get("https://fakestoreapi.com/products");
+      setProductData(response.data);
+      console.log("response", response.data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  }
+
+  useEffect(() => {
+    GetFekeApi();
+  }, []);
+  return (
+    <div>
+      <h1>All Products hello</h1>
+      {ProductData.map((product) => (
+        <div style={{width:"20%;", height:"250px;", border:"2px solid black;"}}>
+          <img style={{width:"100%;", height:"250px;", border:"2px solid black;"}} src={product.image} alt="images" />
+          <h1> title:{product.title}</h1>
+          <h1>price{product.price}$</h1>
+        </div>
+      ))}
+    </div>
+  );
+};
+export default Login;
